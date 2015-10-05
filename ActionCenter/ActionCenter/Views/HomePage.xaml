@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ActionCenter.Views.HomePage"
+             xmlns:controls="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
+              xmlns:telerik="clr-namespace:Telerik.XamarinForms.DataControls;assembly=Telerik.XamarinForms.DataControls"
+             xmlns:telerikListView="clr-namespace:Telerik.XamarinForms.DataControls.ListView;assembly=Telerik.XamarinForms.DataControls"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True">
+  <ContentPage.Padding>
+    <OnPlatform x:TypeArguments="Thickness">
+      <OnPlatform.iOS>
+        0, 20, 0, 0
+      </OnPlatform.iOS>
+      <OnPlatform.Android>
+        0, 0, 0, 0
+      </OnPlatform.Android>
+      <OnPlatform.WinPhone>
+        0, 0, 0, 0
+      </OnPlatform.WinPhone>
+    </OnPlatform>
+  </ContentPage.Padding>
+  <!--Main Grid-->
+  <Grid BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="0" RowSpacing="0">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <!--Header Grid-->
+    <Grid Grid.Row="0" BackgroundColor="#448AFF" HorizontalOptions="FillAndExpand" VerticalOptions="Start" RowSpacing="0"
+          Padding="0,0,0,0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"></RowDefinition>
+      </Grid.RowDefinitions>
+
+      <StackLayout Grid.Row="0" Orientation="Vertical" Padding="10,0,0,0">
+        <Label Text="Open Action Items" FontSize="20" TextColor="White"
+           HorizontalOptions="StartAndExpand" VerticalOptions="StartAndExpand"/>
+        <controls:ImageButton Orientation="ImageToRight" Image="ic_settings_white_24dp.png"
+                Command="{Binding HamburgerCommand}"
+                 FontSize="14" TextColor="White" BackgroundColor="Transparent" HorizontalOptions="End"
+                BorderRadius="0"/>
+      </StackLayout>
+
+
+
+      <Grid Grid.Row="1" ColumnSpacing="0" VerticalOptions="Start" HorizontalOptions="FillAndExpand">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Grid.Column="0"  Text="{Binding GroupStr, StringFormat='Grouped by: {0}'}"
+                Command="{Binding GroupByCommand}" HorizontalOptions="Start"
+                BackgroundColor="Transparent" TextColor="White" BorderRadius="0"/>
+        <StackLayout Grid.Column="1" Padding="0,0,-15,5" HorizontalOptions="End">
+          <controls:ImageButton Orientation="ImageToRight" Image="ic_share_white_24dp.png"
+              Command="{Binding ForwardCommand}"
+               FontSize="14" TextColor="White" BackgroundColor="Transparent" HorizontalOptions="End"
+              BorderRadius="0"/>
+        </StackLayout>
+        <!--<StackLayout Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Padding="0">
+                    <Label Text="Prebilling Selected" IsEnabled="{Binding AreAnyPrebillingSelected}" IsVisible="{Binding AreAnyPrebillingSelected}"></Label>
+                    <Button Text="DoPrebillingStuff" IsEnabled="{Binding AreAnyPrebillingSelected}" IsVisible="{Binding AreAnyPrebillingSelected}"></Button>
+                </StackLayout>
+                <StackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Padding="0">
+                    <Label Text="Utility Selected" IsEnabled="{Binding AreAnyUtilitySelected}" IsVisible="{Binding AreAnyUtilitySelected}"></Label>
+                    <Button Text="DoUtilityStuff" IsEnabled="{Binding AreAnyUtilitySelected}" IsVisible="{Binding AreAnyUtilitySelected}"></Button>
+                </StackLayout>-->
+      </Grid>
+      <!--<Grid Grid.Row="2" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="#448AFF">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+            </Grid>-->
+    </Grid>
+    <StackLayout Grid.Row="1" IsEnabled="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Padding="0"
+                 HorizontalOptions="Center" VerticalOptions="Center">
+      <ActivityIndicator Scale="1" BackgroundColor="Gray" Color="Black"
+              IsEnabled="{Binding IsLoading}" IsVisible="{Binding IsLoading}" IsRunning="{Binding IsLoading}"/>
+      <!--<Label Text="{Binding LoadingText}" TextColor="Black" Opacity="0.87"></Label>-->
+    </StackLayout>
+    <telerik:RadListView Grid.Row="1" x:Name="ActionListView"  ItemsSource="{Binding ActionItems}" ItemSwiping="ActionListView_OnItemSwiping" ItemSwipeStarting="ActionListView_OnItemSwipeStarting"
+                         IsVisible="{Binding IsActionGrp}" IsEnabled="{Binding IsActionGrp}" VerticalOptions="StartAndExpand"
+                         SelectionMode="Single" SelectionGesture="Tap" ItemTapped="List_OnItemTapped" IsItemSwipeEnabled="True" SwipeThreshold="10" SwipeOffset="100000"
+                          IsPullToRefreshEnabled="True" RefreshRequested="ActionListView_OnRefreshRequested">
+      <telerik:RadListView.GroupDescriptors>
+        <telerikListView:PropertyGroupDescriptor PropertyName="ActionTypeStr"/>
+      </telerik:RadListView.GroupDescriptors>
+      <telerik:RadListView.GroupHeaderTemplate>
+        <DataTemplate>
+          <StackLayout Padding="0,10,0,10" BackgroundColor="#e8e8e8">
+            <StackLayout Padding="10,0,0,0">
+              <Label TextColor="Black" Text="{Binding}" FontSize="18"></Label>
+            </StackLayout>
+          </StackLayout>
+        </DataTemplate>
+      </telerik:RadListView.GroupHeaderTemplate>
+      <telerik:RadListView.ItemStyle>
+        <telerikListView:ListViewItemStyle BorderLocation="Bottom" BorderWidth="2" BorderColor="#e8e8e8"/>
+      </telerik:RadListView.ItemStyle>
+      <telerik:RadListView.ItemTemplate>
+        <DataTemplate>
+          <telerikListView:ListViewTemplateCell>
+            <telerikListView:ListViewTemplateCell.View>
+              <StackLayout Orientation="Horizontal" Spacing="2" Padding="0,0,0,3">
+                <controls:CheckBox Checked="{Binding IsSelected, Mode=TwoWay}" BackgroundColor="#f2f2f2" TextColor="#448AFF"></controls:CheckBox>
+                <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="10,0,10,0" Spacing="1">
+                  <Label Text="{Binding Property, StringFormat='{0}'}" TextColor="Black" FontSize="16" VerticalOptions="Center"></Label>
+                  <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="1" Padding="15,0,0,0">
+                    <Label Text="{Binding Description, StringFormat='{0}'}"
+                       FontSize="14" TextColor="Black" HorizontalOptions="StartAndExpand" VerticalOptions="Center"></Label>
+                    <Label Text="{Binding CreatedAt, StringFormat='{0}'}"
+                       FontSize="14" TextColor="Black" HorizontalOptions="End" VerticalOptions="Center"></Label>
+                  </StackLayout>
+                </StackLayout>
+              </StackLayout>
+            </telerikListView:ListViewTemplateCell.View>
+          </telerikListView:ListViewTemplateCell>
+        </DataTemplate>
+      </telerik:RadListView.ItemTemplate>
+      <telerik:RadListView.ItemSwipeContentTemplate>
+        <DataTemplate>
+          <Grid BackgroundColor="#448AFF">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!--Prebilling Swipe -->
+            <Button Text="Approve" TextColor="White" BackgroundColor="#448AFF" IsEnabled="{Binding IsPrebillingApproval}" IsVisible="{Binding IsPrebillingApproval}" BorderRadius="0" Grid.Column="0"/>
+            <Label Text="{Binding Property}" FontSize="12" TextColor="White" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Grid.Column="1"></Label>
+            <Button Text="None" TextColor="White" BackgroundColor="#448AFF" IsEnabled="{Binding IsUtilityAlert}" IsVisible="{Binding IsUtilityAlert}" BorderRadius="0" Grid.Column="2"/>
+          </Grid>
+        </DataTemplate>
+      </telerik:RadListView.ItemSwipeContentTemplate>
+    </telerik:RadListView>
+
+    <telerik:RadListView Grid.Row="1"  x:Name="PropertyListView" ItemsSource="{Binding ActionItems}"
+                          IsVisible="{Binding IsNotActionGrp}" IsEnabled="{Binding IsNotActionGrp}" ItemTapped="List_OnItemTapped"
+                          IsPullToRefreshEnabled="True" SelectionGesture="Tap" SelectionMode="Single" VerticalOptions="StartAndExpand">
+      <telerik:RadListView.GroupDescriptors>
+        <telerikListView:PropertyGroupDescriptor PropertyName="Property"/>
+      </telerik:RadListView.GroupDescriptors>
+      <telerik:RadListView.SelectedItemStyle>
+        <telerikListView:ListViewItemStyle BackgroundColor="#448AFF" BorderLocation="All"/>
+      </telerik:RadListView.SelectedItemStyle>
+      <telerik:RadListView.GroupHeaderTemplate>
+        <DataTemplate>
+          <StackLayout Padding="0,5,0,5">
+            <Label TextColor="Black" Text="{Binding StringFormat=' {0}'}" FontSize="18" BackgroundColor="#e8e8e8" ></Label>
+          </StackLayout>
+        </DataTemplate>
+      </telerik:RadListView.GroupHeaderTemplate>
+      <telerik:RadListView.ItemTemplate >
+        <DataTemplate>
+          <telerikListView:ListViewTemplateCell>
+            <telerikListView:ListViewTemplateCell.View>
+              <StackLayout Orientation="Horizontal" Spacing="2" Padding="15,0,0,0">
+                <Label Text="{Binding Description, StringFormat='{0}'}" FontSize="14" TextColor="Black" HorizontalOptions="StartAndExpand"/>
+                <Label Text="{Binding CreatedAt, StringFormat='{0}'}" FontSize="14" TextColor="Black" HorizontalOptions="End"/>
+              </StackLayout>
+            </telerikListView:ListViewTemplateCell.View>
+          </telerikListView:ListViewTemplateCell>
+        </DataTemplate>
+      </telerik:RadListView.ItemTemplate>
+      <!--<telerikListView:ListViewLinearLayout Orientation="Vertical" VerticalItemSpacing="5"/>-->
+    </telerik:RadListView>
+    <Grid Grid.Row="2" Padding="2" BackgroundColor="#448AFF" ColumnSpacing="10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"></ColumnDefinition>
+        <ColumnDefinition Width="*"></ColumnDefinition>
+      </Grid.ColumnDefinitions>
+
+      <StackLayout Grid.Column="0" Padding="5,10,0,5" Orientation="Vertical" Spacing="2" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand">
+        <Frame Padding="5" BackgroundColor="White">
+          <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"></ColumnDefinition>
+              <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"></RowDefinition>
+              <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Grid.Column="0" Padding="-10,0,0,0">
+              <controls:CircleImage  Aspect="AspectFit" Scale="1" Source="https://mug0.assets-yammer.com/mugshot/images/150x150/QFNDQDBfbJpp50Wxll8nXLfnV-wr51Ps"></controls:CircleImage>
+            </StackLayout>
+
+            <StackLayout Grid.Row="0" Grid.Column="1" Padding="0,10,0,0">
+              <Label Text="{Binding AmName}" TextColor="Black" Opacity="0.87" FontSize="17" BackgroundColor="White" HorizontalOptions="Start" FontAttributes="Bold"></Label>
+              <Label Text="Account Manager" TextColor="Black" Opacity="0.54" FontSize="14" HorizontalOptions="Start"></Label>
+            </StackLayout>
+
+            <StackLayout Grid.Row="1" Grid.Column="0">
+              <controls:ImageButton  Orientation="ImageToLeft" Image="ic_phone_white_24dp.png"
+                                          Command="{Binding PhoneCommand}" CommandParameter="{Binding AmPhone}"
+                                           BackgroundColor="#0D47A1" Text="CALL" TextColor="White"  FontSize="14"
+                                          BorderRadius="4"/>
+            </StackLayout>
+
+            <StackLayout Grid.Row="1" Grid.Column="1">
+              <controls:ImageButton  Orientation="ImageToLeft" Image="ic_email_white_24dp.png"
+              Command="{Binding EmailCommand}" CommandParameter="{Binding AmEmail}"
+              BackgroundColor="#0D47A1" Text="EMAIL" TextColor="White" FontSize="14"
+              BorderRadius="4"/>
+            </StackLayout>
+
+
+          </Grid>
+        </Frame>
+      </StackLayout>
+      <StackLayout Grid.Column="1" Padding="0,10,5,5" Orientation="Vertical" Spacing="2" HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand">
+        <Frame Padding="5" BackgroundColor="White">
+          <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"></ColumnDefinition>
+              <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"></RowDefinition>
+              <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Grid.Column="0" Padding="-10,0,0,0">
+              <controls:CircleImage  Aspect="AspectFit" Scale="1" Source="https://mug0.assets-yammer.com/mugshot/images/150x150/QFNDQDBfbJpp50Wxll8nXLfnV-wr51Ps"></controls:CircleImage>
+            </StackLayout>
+
+            <StackLayout Grid.Row="0" Grid.Column="1" Padding="0,10,0,0" Spacing="1">
+              <Label Text="{Binding PsrName}" TextColor="Black" Opacity="0.87" FontSize="17" BackgroundColor="White" HorizontalOptions="Start" FontAttributes="Bold"></Label>
+              <Label Text="Property Service Representative" TextColor="Black" Opacity="0.54" FontSize="12" HorizontalOptions="Start"></Label>
+            </StackLayout>
+
+            <StackLayout Grid.Row="1" Grid.Column="0">
+              <controls:ImageButton  Orientation="ImageToLeft" Image="ic_phone_white_24dp.png"
+                                          Command="{Binding PhoneCommand}" CommandParameter="{Binding PsrPhone}"
+                                           BackgroundColor="#0D47A1" Text="CALL" TextColor="White"  FontSize="14"
+                                          BorderRadius="4"/>
+            </StackLayout>
+
+            <StackLayout Grid.Row="1" Grid.Column="1">
+              <controls:ImageButton  Orientation="ImageToLeft" Image="ic_email_white_24dp.png"
+              Command="{Binding EmailCommand}" CommandParameter="{Binding PsrEmail}"
+              BackgroundColor="#0D47A1" Text="EMAIL" TextColor="White" FontSize="14"
+              BorderRadius="4"/>
+            </StackLayout>
+
+
+          </Grid>
+        </Frame>
+        <!--<Frame Padding="5" BackgroundColor="White">
+                    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding PsrName}" TextColor="Black" Opacity="0.87" FontSize="12" 
+                               BackgroundColor="White" HorizontalOptions="CenterAndExpand" FontAttributes="Bold"></Label>
+                        <StackLayout Padding="15,20,0,0" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
+                            <controls:CircleImage  Aspect="AspectFit" Scale="1.5" Source="https://mug0.assets-yammer.com/mugshot/images/150x150/QFNDQDBfbJpp50Wxll8nXLfnV-wr51Ps"></controls:CircleImage>
+                        </StackLayout>
+                        <controls:ImageButton Grid.Row="1" Grid.Column="1" Orientation="ImageToLeft" Image="ic_phone_white_24dp.png" 
+                            Command="{Binding PhoneCommand}" CommandParameter="{Binding PsrPhone}" HorizontalOptions="EndAndExpand"
+                             BackgroundColor="#448AFF" Text="    Call" TextColor="White"  FontSize="12" VerticalOptions="Center"
+                            BorderRadius="4"/>
+                        <controls:ImageButton Grid.Row="2" Grid.Column="1" Orientation="ImageToLeft" Image="ic_email_white_24dp.png" 
+                           Command="{Binding EmailCommand}" CommandParameter="{Binding PsrEmail}" HorizontalOptions="EndAndExpand"
+                             BackgroundColor="#448AFF" Text=" Email" TextColor="White" FontSize="12" VerticalOptions="Center"
+                            BorderRadius="4"/>
+                    </Grid>
+                </Frame>-->
+      </StackLayout>
+    </Grid>
+  </Grid>
+
+</ContentPage>
